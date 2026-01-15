@@ -1,9 +1,7 @@
-from datetime import datetime
-from zoneinfo import ZoneInfo
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
-from bot.app.api_client import register_user
+from bot.app.api_client import create_user, get_user, update_user
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from keyboards import tz_guess, regions, region_cities
@@ -40,10 +38,13 @@ async def handle_start(message: Message, state: FSMContext):
 @router.callback_query(TimezoneSelection.tz_confirmation_or_change, F.data.startswith("confirm_tz:"))
 async def handle_confirm_tz(callback: CallbackQuery, state: FSMContext):
     tz = callback.data.split(":")[1]
-    register_user(
-        user_id=callback.message.from_user.id,
-        timezone=tz,
-        created_at=datetime.now(ZoneInfo(tz)))
+    user = get_user(callback.from_user.id)
+
+    if user is None:
+        create_user(user_id=callback.message.from_user.id, timezone=tz)
+    else:
+        update_user(user_id=callback.message.from_user.id, timezone=tz)
+
     await state.clear()
     await callback.message.edit_text(
         f"Timezone *{tz}* successfully selected!\n\nYou can change it anytime, using corresponding button",
