@@ -34,12 +34,12 @@ LANG_TO_TZ = {
     "tr": "Europe/Istanbul",
     "ar": "Asia/Riyadh",
     "pt": "America/Sao_Paulo",
-    "en": "UTC",
+    "en": "Europe/London",
 }
 
 def guess_timezone_from_language(lang: str) -> str | None:
     if not lang:
-        return None
+        return "Europe/London"
     return LANG_TO_TZ.get(lang.lower().split("-")[0])
 
 def format_tz_offset(tz_name: str) -> str:

@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from backend.app.models import User
@@ -7,7 +6,6 @@ def create_user(db: Session, user_id: int, timezone_str: str) -> User:
     db_user = User(
         id=user_id,
         timezone=timezone_str,
-        created_at=datetime.now(timezone.utc)
     )
     db.add(db_user)
     db.commit()

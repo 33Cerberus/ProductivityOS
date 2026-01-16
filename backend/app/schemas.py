@@ -1,12 +1,33 @@
 from datetime import datetime
-from pydantic import BaseModel
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+from pydantic import BaseModel, field_validator
+
 
 class UserCreate(BaseModel):
     id: int
     timezone: str
 
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, tz: str) -> str:
+        try:
+            ZoneInfo(tz)
+        except ZoneInfoNotFoundError:
+            raise ValueError("Invalid timezone")
+        return tz
+
 class UserUpdate(BaseModel):
     timezone: str
+
+    @field_validator("timezone")
+    @classmethod
+    def validate_timezone(cls, tz: str) -> str:
+        try:
+            ZoneInfo(tz)
+        except ZoneInfoNotFoundError:
+            raise ValueError("Invalid timezone")
+        return tz
 
 class UserOut(BaseModel):
     id: int
@@ -14,4 +35,4 @@ class UserOut(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

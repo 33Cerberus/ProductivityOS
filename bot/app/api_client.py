@@ -1,33 +1,36 @@
-import requests
+from typing import Optional
+import aiohttp
+from aiohttp import ClientSession
+from config import BACKEND_URL
 
-BACKEND_URL = "http://127.0.0.1:8000"
+session: Optional[ClientSession] = None
 
-def create_user(user_id: int, timezone: str) -> dict:
-    response = requests.post(
-        f"{BACKEND_URL}/users",
-        json={"id": user_id, "timezone": timezone},
-        timeout=5
-    )
-    response.raise_for_status()
-    return response.json()
+async def init_session():
+    global session
+    session = aiohttp.ClientSession()
 
-def get_user(user_id: int) -> dict:
-    response = requests.get(f"{BACKEND_URL}/users/{user_id}", timeout=5)
-    if response.status_code == 404:
-        return None
-    response.raise_for_status()
-    return response.json()
+async def close_session():
+    if session:
+        await session.close()
 
-def get_users() -> list:
-    response = requests.get(f"{BACKEND_URL}/users", timeout=5)
-    response.raise_for_status()
-    return response.json()
+async def create_user(user_id: int, timezone: str) -> dict:
+    async with session.post(f"{BACKEND_URL}/users",json={"id": user_id, "timezone": timezone}) as response:
+        response.raise_for_status()
+        return await response.json()
 
-def update_user(user_id: int, timezone: str) -> dict:
-    response = requests.put(
-        f"{BACKEND_URL}/users/{user_id}",
-        json={"timezone": timezone},
-        timeout=5
-    )
-    response.raise_for_status()
-    return response.json()
+async def get_user(user_id: int) -> dict:
+    async with session.get(f"{BACKEND_URL}/users/{user_id}") as response:
+        if response.status == 404:
+            return None
+        response.raise_for_status()
+        return await response.json()
+
+async def get_users() -> list:
+    async with session.get(f"{BACKEND_URL}/users") as response:
+        response.raise_for_status()
+        return await response.json()
+
+async def update_user(user_id: int, timezone: str) -> dict:
+    async with session.put(f"{BACKEND_URL}/users/{user_id}", json={"timezone": timezone}) as response:
+        response.raise_for_status()
+        return await response.json()

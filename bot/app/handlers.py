@@ -9,8 +9,6 @@ from utils.timezone import guess_timezone_from_language
 
 router = Router()
 
-API_URL = "http://127.0.0.1:8000"
-
 class TimezoneSelection(StatesGroup):
     tz_confirmation_or_change = State()
     region_selection = State()
@@ -38,12 +36,12 @@ async def handle_start(message: Message, state: FSMContext):
 @router.callback_query(TimezoneSelection.tz_confirmation_or_change, F.data.startswith("confirm_tz:"))
 async def handle_confirm_tz(callback: CallbackQuery, state: FSMContext):
     tz = callback.data.split(":")[1]
-    user = get_user(callback.from_user.id)
+    user = await get_user(callback.from_user.id)
 
     if user is None:
-        create_user(user_id=callback.from_user.id, timezone=tz)
+        await create_user(user_id=callback.from_user.id, timezone=tz)
     else:
-        update_user(user_id=callback.from_user.id, timezone=tz)
+        await update_user(user_id=callback.from_user.id, timezone=tz)
 
     await state.clear()
     await callback.message.edit_text(

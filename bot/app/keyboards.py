@@ -2,7 +2,6 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from utils.timezone import REGION_CITIES, format_tz_offset
 
-
 def tz_guess(tz: str) -> InlineKeyboardBuilder:
     keyboard = InlineKeyboardBuilder()
     keyboard.add(InlineKeyboardButton(text="Confirm", callback_data=f"confirm_tz:{tz}"))
