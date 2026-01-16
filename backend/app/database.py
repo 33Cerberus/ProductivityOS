@@ -1,10 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base, Session
 from backend.app.config import DATABASE_URL
-import os
-
-print("🚨 DB OPENED BY PID:", os.getpid())
-print("🚨 CWD:", os.getcwd())
 
 engine = create_engine(
     DATABASE_URL,
