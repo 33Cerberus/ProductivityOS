@@ -41,9 +41,9 @@ async def handle_confirm_tz(callback: CallbackQuery, state: FSMContext):
     user = get_user(callback.from_user.id)
 
     if user is None:
-        create_user(user_id=callback.message.from_user.id, timezone=tz)
+        create_user(user_id=callback.from_user.id, timezone=tz)
     else:
-        update_user(user_id=callback.message.from_user.id, timezone=tz)
+        update_user(user_id=callback.from_user.id, timezone=tz)
 
     await state.clear()
     await callback.message.edit_text(
