@@ -1,11 +1,12 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
-from bot.app.api_client import create_user, get_user, update_user
+from bot.app.api_client import create_user, get_user, update_user, create_task, get_task, update_task, get_task
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.fsm.context import FSMContext
 from keyboards import tz_guess, regions, region_cities
 from utils.timezone import guess_timezone_from_language
+from datetime import date as date_type
 
 router = Router()
 
@@ -73,3 +74,7 @@ async def handle_back(callback: CallbackQuery, state: FSMContext):
             await state.set_state(TimezoneSelection.region_selection)
             await callback.message.edit_text("Select your region", reply_markup=regions())
     await callback.answer()
+
+@router.message(F.text == "/add")
+async def handle_add(message: Message, state: FSMContext):
+    await create_task(message.from_user.id, date_type.today(), "test task")

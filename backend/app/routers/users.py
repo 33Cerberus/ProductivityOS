@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from backend.app.schemas import UserCreate, UserUpdate, UserOut
-from backend.app.crud import create_user, get_user, list_users, update_user
+from backend.app.crud import create_user, get_user, get_users, update_user
 from backend.app.database import get_db
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -17,7 +17,7 @@ def create_user_endpoint(payload: UserCreate, db: Session = Depends(get_db)):
 
 @router.get("", response_model=List[UserOut])
 def read_users_endpoint(db: Session = Depends(get_db)):
-    return list_users(db)
+    return get_users(db)
 
 @router.get("/{user_id}", response_model=UserOut)
 def read_user_endpoint(user_id: int, db: Session = Depends(get_db)):
